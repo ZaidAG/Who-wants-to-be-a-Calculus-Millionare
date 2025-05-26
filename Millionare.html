@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who Wants to Be a Calculus Millionaire?</title>
+  <style>
+    body {
+      font-family: 'Trebuchet MS', sans-serif;
+      background-color: #0b0c2a;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #1a1c3b;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    .logo {
+      width: 200px;
+      margin-bottom: 20px;
+    }
+    .question {
+      font-size: 22px;
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      border: 2px solid #ffd700;
+      border-radius: 12px;
+      background: linear-gradient(to right, #000066, #000099);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .options button:hover {
+      background: linear-gradient(to right, #000099, #0000cc);
+      transform: scale(1.02);
+    }
+    .options button.correct {
+      background-color: #28a745 !important;
+      border-color: #28a745 !important;
+      color: white;
+    }
+    .options button.incorrect {
+      background-color: #dc3545 !important;
+      border-color: #dc3545 !important;
+      color: white;
+    }
+    .score {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #00ffcc;
+    }
+    .lifelines {
+      margin-top: 10px;
+      display: none;
+    }
+    .lifelines button {
+      margin: 5px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background-color: #2e3073;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .start-button {
+      padding: 14px 24px;
+      font-size: 20px;
+      background: linear-gradient(to right, #f7b733, #fc4a1a);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .start-button:hover {
+      background: linear-gradient(to right, #fc4a1a, #f7b733);
+      transform: scale(1.05);
+    }
+    .category-selection button {
+      padding: 14px 24px;
+      font-size: 20px;
+      background: linear-gradient(to right, #f7b733, #fc4a1a);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+    .category-selection button:hover {
+      background: linear-gradient(to right, #fc4a1a, #f7b733);
+      transform: scale(1.05);
+    }
+    #instructions-box {
+      display: none;
+      margin-top: 20px;
+      text-align: left;
+      font-size: 16px;
+      background-color: #2a2c4d;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="./Logo.png" alt="Millionaire Calculus Logo" class="logo" />
+    <h1>Who Wants to Be a Calculus Millionaire?</h1>
+    <div class="question" id="question">Click Start to Begin</div>
+    <div class="options" id="options"></div>
+    <button class="start-button" onclick="startGame()" id="start-button">Start Game</button>
+    <button class="start-button" onclick="toggleInstructions()" id="instructions-button">Instructions</button>
+
+    <div id="instructions-box">
+      <h2>How to Play</h2>
+      <ul>
+        <li>Click <strong>Start Game</strong> to begin.</li>
+        <li>Select a category: Series, Integrals, or Polar.</li>
+        <li>Answer 15 questions in that category to win!</li>
+        <li>Each correct answer increases your score.</li>
+        <li>Use lifelines (50:50, Ask the Audience, Phone a Friend) once each per game.</li>
+        <li>If you answer wrong, the game ends and you walk away with your earnings.</li>
+      </ul>
+    </div>
+
+    <div class="category-selection" id="category-selection" style="display: none;">
+      <h2>Select a Category</h2>
+      <button onclick="selectCategory('series')">Series</button>
+      <button onclick="selectCategory('integrals')">Integrals</button>
+      <button onclick="selectCategory('polar')">Polar</button>
+    </div>
+
+    <div class="lifelines" id="lifelines">
+      <button onclick="useFiftyFifty()">50:50</button>
+      <button onclick="useAskAudience()">Ask the Audience</button>
+      <button onclick="usePhoneAFriend()">Phone a Friend</button>
+    </div>
+
+    <div class="score" id="score">Score: $0</div>
+
+    <audio id="introMusic" src="./intro.mp3" loop></audio>
+    <audio id="questionMusic" src="./song.mp3" loop></audio>
+    <audio id="correctSound" src="./correct.mp3"></audio>
+    <audio id="wrongSound" src="./wrong.mp3"></audio>
+  </div>
+
+  <script>
+    const questions = [
+    {
+      question: "What is the value of the infinite geometric series: 2 + 1 + 1/2 + 1/4 + ...?",
+      options: ["A) 3", "B) 4", "C) 5", "D) 6"],
+      answer: "B",
+      difficulty: "easy"
+    },
+    {
+      question: "What is the common ratio of the geometric series: 5 - 2.5 + 1.25 - 0.625 + ...?",
+      options: ["A) -0.5", "B) 0.5", "C) 2", "D) -2"],
+      answer: "A",
+      difficulty: "easy"
+    },
+    {
+      question: "Does the series Σ(1/2^n) from n=1 to ∞ converge or diverge?",
+      options: ["A) Converges", "B) Diverges", "C) Oscillates", "D) None of the Above"],
+      answer: "A",
+      difficulty: "easy"
+    },
+    {
+      question: "Find the sum of the series Σ(3/4^n) from n=1 to ∞.",
+      options: ["A) 1", "B) 3/4", "C) 4/3", "D) 3/3"],
+      answer: "A",
+      difficulty: "easy"
+    },
+    {
+      question: "For which values of r does the geometric series Σ(ar^n) converge?",
+      options: ["A) |r|<1", "B) |r|>1", "C) r=1", "D) All real r"],
+      answer: "A",
+      difficulty: "easy"
+    },
+    {
+      question: "What is the sum of the first five terms: 1 + 2 + 3 + 4 + 5?",
+      options: ["A) 10", "B) 15", "C) 20", "D) 5"],
+      answer: "B",
+      difficulty: "easy"
+    },
+    {
+      question: "Which test is most appropriate for determining if ∑(1/n²) converges?",
+      options: ["A) Ratio Test", "B) Limit Comparison Test", "C) Integral Test", "D) Alternating Series Test"],
+      answer: "C",
+      difficulty: "medium"
+    },
+    {
+      question: "Does the series ∑((-1)^n)/n converge absolutely, conditionally, or diverge?",
+      options: ["A) Absolutely", "B) Conditionally", "C) Diverges", "D) None of these"],
+      answer: "B",
+      difficulty: "medium"
+    },
+    {
+      question: "Find the radius of convergence for ∑(x^n)/n.",
+      options: ["A) 1", "B) 0", "C) ∞", "D) 2"],
+      answer: "A",
+      difficulty: "medium"
+    },
+    {
+      question: "Which of the following series diverges?",
+      options: ["A) ∑(1/n²)", "B) ∑(1/n)", "C) ∑(1/2^n)", "D) ∑((-1)^{n+1}/n)"],
+      answer: "B",
+      difficulty: "medium"
+    },
+    {
+      question: "If ∑aₙ converges and aₙ > 0, which statement is true?",
+      options: ["A) lim aₙ = 0", "B) lim aₙ ≠ 0", "C) ∑aₙ diverges", "D) aₙ must be decreasing"],
+      answer: "A",
+      difficulty: "medium"
+    },
+    {
+      question: "The power series ∑(x−2)^n converges for which x?",
+      options: ["A) |x−2| < 1", "B) |x−2| ≤ 1", "C) |x−2| > 1", "D) All x"],
+      answer: "A",
+      difficulty: "hard"
+    },
+    {
+      question: "If ∑(n!/n^n) converges, what test best shows this?",
+      options: ["A) Ratio Test", "B) Direct Comparison Test", "C) Alternating Series Test", "D) Geometric Series Test"],
+      answer: "A",
+      difficulty: "hard"
+    },
+    {
+      question: "What is the sum of the series ∑(1/3)^n?",
+      options: ["A) 1/2", "B) 1/3", "C) 3/2", "D) 3/4"],
+      answer: "C",
+      difficulty: "hard"
+    },
+    {
+      question: "What is the interval of convergence for ∑((x−2)^n)/n?",
+      options: ["A) 1 < x < 3", "B) x > 2", "C) x < 2", "D) -1 < x < 1"],
+      answer: "A",
+      difficulty: "hard"
+    },
+    //Intergrals
+    {
+      question: "Evaluate ∫2x dx",
+      options: ["A) x^2+C", "B) 2x^2+C", "C) x^2", "D) 2x+C"],
+      answer: "A",
+      difficulty: "easy"
+    },
+    {
+      question: "Evaluate ∫3 dx from 0 to 1",
+      options: ["A) 1", "B) 2", "C) 3", "D) 0"],
+      answer: "A",
+      difficulty: "easy"
+    },
+    {
+      question: "Which of the following is the antiderivative of cos 𝑥?",
+      options: ["A) sin x +C", "B) -sin x +C", "C) -cos x +C", "D) tan x + C"],
+      answer: "A",
+      difficulty: "easy"
+    },
+    {
+      question: "Evaluate ∫x^2 dx",
+      options: ["A) 1/2x^2 + C", "B) 1/3x^3 + C", "C) x^3+C", "D) 2x + C"],
+      answer: "B",
+      difficulty: "easy"
+    },
+    {
+      question: "Evaluate ∫x dx from 1 to 2",
+      options: ["A) 3/2", "B) 2", "C) 1", "D) 5/2"],
+      answer: "A",
+      difficulty: "easy"
+    },
+    {
+      question: "Evaluate ∫4x^3-2x dx",
+      options: ["A) x^4 - x^2 + C", "B) x^4 -2x + C", "C) 4x^4 - x^2 + C", "D) x^4 -2x + C"],
+      answer: "A",
+      difficulty: "Medium"
+    },
+    {
+      question: "If F(x) is the antiderivaive of f(x), then what is d/dx∫f(t)dt from 0 to x?",
+      options: ["A) F(x)", "B) f(x)", "C) f(0)", "D) F(0)"],
+      answer: "B",
+      difficulty: "easy"
+    },
+    {
+      question: "Evaluate ∫sinx dx from 0 to π",
+      options: ["A) 0", "B) 2", "C) 1", "D) -2"],
+      answer: "D",
+      difficulty: "easy"
+    },
+    {
+      question: "The area under 𝑦=𝑥 from 𝑥=2 to 𝑥=5 is what?",
+      options: ["A) 9", "B) 21/2", "C) 15/2", "D) 12"],
+      answer: "B",
+      difficulty: "medium"
+    },
+    {
+      question: "Evaluate ∫1/x dx",
+      options: ["A) ln|x| + C", "B) 1/x + C", "C) -1/x + C ","D) e^x + C"],
+      answer: "A",
+      difficulty: "easy"
+    },
+    {
+      question: "Evaluate ∫(3x^2+2x dx) from 0 to 2",
+      options: ["A) 12", "B) 10", "C) 8", "D) 6"],
+      answer: "A",
+      difficulty: "hard"
+    },
+    {
+      question: "Evaluate ∫e^2x dx from 0 to 1",
+      options: ["A) e^2 - 1", "B) 1/2(e^2 - 1)", "C) 2(e^2 - 1)", "D) e - 1"],
+      answer: "B",
+      difficulty: "medium"
+    },
+    {
+      question: "Evaluate from ∫(1/1+x^2)dx from 0 to 1",
+      options: ["A) π/4", "B) π/2", "C) 1", "D) 0"],
+      answer: "A",
+      difficulty: "hard"
+    },
+    {
+      question: "Evaluate ∫xe^(x^2) dx",
+      options: ["A) 1/2e^(x^2) + C", "B) e^(x^2) + C", "C) (x^2)(e^x)+C", "D) "],
+      answer: "A",
+      difficulty: "hard"
+    },
+    {
+      question: "Evaluate ∫((x^3)cos(x^4))dx from 0 to 1",
+      options: ["A) 1/4sin(1)", "B) sin(1)", "C) 1/3sin(1)", "D) 1/4cos(1)"],
+      answer: "A",
+      difficulty: "hard"
+    },
+    //Polar/Parametric
+    {
+        question: "Which of the following is the polar form of the point (2, π/3)?",
+        options: ["A) (1, π/6)", "B) (2, π/3)", "C) (2, π/2)", "D) (3, π/4)"],
+        answer: "B"
+      },
+      {
+        question: "What is the rectangular (Cartesian) coordinate of the point (4, 0) in polar form?",
+        options: ["A) (4, 0)", "B) (0, 4)", "C) (0, -4)", "D) (2, 2)"],
+        answer: "A"
+      },
+      {
+        question: "Convert (1, π/2) from polar to rectangular coordinates.",
+        options: ["A) (1, 0)", "B) (0, 1)", "C) (-1, 0)", "D) (0, -1)"],
+        answer: "B"
+      },
+      {
+        question: "If r = 2, what is the distance from the origin to the point in polar coordinates?",
+        options: ["A) 1", "B) 2", "C) 3", "D) 4"],
+        answer: "B"
+      },
+      {
+        question: "Which angle corresponds to the positive y-axis in polar coordinates?",
+        options: ["A) 0", "B) π/2", "C) π", "D) 3π/2"],
+        answer: "B"
+      },
+      {
+        question: "Which polar equation represents a circle centered at the origin with radius 3?",
+        options: ["A) r = 3", "B) θ = 3", "C) r = 2", "D) θ = π"],
+        answer: "A"
+      },
+      {
+        question: "What is the rectangular form of the polar equation r = 2cos(θ)?",
+        options: ["A) x² + y² = 2x", "B) x² + y² = 2y", "C) x² + y² = 4x", "D) x² + y² = 4y"],
+        answer: "A"
+      },
+      {
+        question: "Which of the following points is NOT on the polar curve r = 2sin(θ)?",
+        options: ["A) (0, 0)", "B) (2, π/2)", "C) (2, 0)", "D) (1, π/6)"],
+        answer: "C"
+      },
+      {
+        question: "For r = 3 + 2cos(θ), what is the value of r when θ = 0?",
+        options: ["A) 1", "B) 3", "C) 5", "D) 0"],
+        answer: "C"
+      },
+      {
+        question: "What is the slope of the tangent line to r = 1 + sin(θ) at θ = π/2?",
+        options: ["A) 0", "B) 1", "C) 2", "D) Undefined"],
+        answer: "A"
+      },
+      {
+        question: "Which of the following best describes the graph of r = 2sin(θ)?",
+        options: ["A) A circle above the origin", "B) A line through the origin", "C) A parabola", "D) A spiral"],
+        answer: "A"
+      },
+      {
+        question: "What is the area enclosed by one loop of r = sin(2θ)?",
+        options: ["A) π/2", "B) π/4", "C) π/8", "D) π/16"],
+        answer: "C"
+      },
+      {
+        question: "If r = 2cos(3θ), how many petals does the rose curve have?",
+        options: ["A) 2", "B) 3", "C) 6", "D) 8"],
+        answer: "C"
+      },
+      {
+        question: "For the curve r = 1 + 2cos(θ), what is the maximum value of r?",
+        options: ["A) 1", "B) 2", "C) 3", "D) 4"],
+        answer: "C"
+      },
+      {
+        question: "What is the length of the curve r = 2θ from θ = 0 to θ = π?",
+        options: ["A) 2π", "B) π√5", "C) (π²)/2", "D) 2π√2"],
+        answer: "B"
+      }
+    ];
+
+    const categorizedQuestions = {
+      series: questions.slice(0, 15),
+      integrals: questions.slice(15, 30),
+      polar: questions.slice(30, 45)
+    };
+
+    let currentQuestion = 0;
+    let questionsInPlay = [];
+    let score = 0;
+    let lifelinesUsed = {
+      fiftyFifty: false,
+      audience: false,
+      phone: false
+    };
+
+    const questionMusic = document.getElementById("questionMusic");
+    const introMusic = document.getElementById("introMusic");
+    const correctSound = document.getElementById("correctSound");
+    const wrongSound = document.getElementById("wrongSound");
+
+    window.onload = () => {
+      introMusic.play();
+    };
+
+    function startGame() {
+      currentQuestion = 0;
+      score = 0;
+      lifelinesUsed = { fiftyFifty: false, audience: false, phone: false };
+      window.speechSynthesis.cancel();
+
+      introMusic.pause();
+      introMusic.currentTime = 0;
+
+      questionMusic.pause();
+      questionMusic.currentTime = 0;
+
+      document.getElementById("lifelines").style.display = "none";
+      document.getElementById("category-selection").style.display = "block";
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("question").textContent = "Please select a category.";
+
+      document.getElementById("instructions-box").style.display = "none";
+      document.getElementById("instructions-button").style.display = "none";
+      document.getElementById("start-button").style.display = "none"; // ✅ Hide Start Game
+    }
+
+    function toggleInstructions() {
+      const box = document.getElementById("instructions-box");
+      const isVisible = box.style.display === "block";
+
+      if (!isVisible) {
+        box.style.display = "block";
+        const instructionsText = `
+          Welcome to Who Wants to Be a Calculus Millionaire.
+          Click Start Game to begin.
+          Then choose a category: Series, Integrals, or Polar.
+          Answer 15 questions to win the game.
+          Use lifelines like fifty-fifty, Ask the Audience, and Phone a Friend.
+          But be careful — one wrong answer and the game ends.
+          Good luck!
+        `;
+        speakText(instructionsText);
+      } else {
+        box.style.display = "none";
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function selectCategory(category) {
+      questionsInPlay = categorizedQuestions[category];
+      currentQuestion = 0;
+      document.getElementById("category-selection").style.display = "none";
+      document.getElementById("lifelines").style.display = "block";
+      updateQuestionDisplay();
+    }
+
+    function updateQuestionDisplay() {
+      const q = questionsInPlay[currentQuestion];
+      document.getElementById("question").textContent = q.question;
+      const optionsContainer = document.getElementById("options");
+      optionsContainer.innerHTML = "";
+      q.options.forEach(option => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.onclick = () => handleAnswer(option[0]);
+        optionsContainer.appendChild(button);
+      });
+      document.getElementById("score").textContent = `Score: $${score}`;
+      speakText(q.question + ". " + q.options.join(". "));
+      questionMusic.play();
+    }
+
+    function handleAnswer(answer) {
+      window.speechSynthesis.cancel();
+      const correct = questionsInPlay[currentQuestion].answer;
+      const buttons = document.querySelectorAll("#options button");
+
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent.startsWith(correct)) {
+          btn.classList.add("correct");
+        }
+        if (btn.textContent.startsWith(answer) && answer !== correct) {
+          btn.classList.add("incorrect");
+        }
+      });
+
+      questionMusic.pause();
+      questionMusic.currentTime = 0;
+
+      if (answer === correct) {
+        correctSound.play();
+        score += 100 * (currentQuestion + 1);
+        currentQuestion++;
+        setTimeout(() => {
+          if (currentQuestion < questionsInPlay.length) {
+            updateQuestionDisplay();
+          } else {
+            document.getElementById("question").textContent = `Congratulations! You won $${score}`;
+            document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';
+            speakText(`Congratulations! You won $${score}`);
+          }
+        }, 1500);
+      } else {
+        wrongSound.play();
+        wrongSound.onended = () => {
+          document.getElementById("question").textContent = `Wrong answer. You walk away with $${score}`;
+          document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
+          speakText(`Wrong answer. You walk away with $${score}`);
+        };
+      }
+    }
+
+    function useFiftyFifty() {
+      if (!lifelinesUsed.fiftyFifty && currentQuestion < questionsInPlay.length) {
+        lifelinesUsed.fiftyFifty = true;
+        const q = questionsInPlay[currentQuestion];
+        const correct = q.answer;
+        const incorrect = ["A", "B", "C", "D"].filter(opt => opt !== correct);
+        const randomIncorrect = incorrect[Math.floor(Math.random() * incorrect.length)];
+        const filtered = [correct, randomIncorrect];
+        const filteredOptions = q.options.filter(opt => filtered.includes(opt[0]));
+        const optionsContainer = document.getElementById("options");
+        optionsContainer.innerHTML = "";
+        filteredOptions.forEach(option => {
+          const button = document.createElement("button");
+          button.textContent = option;
+          button.onclick = () => handleAnswer(option[0]);
+          optionsContainer.appendChild(button);
+        });
+      }
+    }
+
+    function useAskAudience() {
+      if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
+        lifelinesUsed.audience = true;
+        const q = questionsInPlay[currentQuestion];
+        speakText(`The audience thinks the answer is ${q.answer}`);
+      }
+    }
+
+    function usePhoneAFriend() {
+      if (!lifelinesUsed.phone && currentQuestion < questionsInPlay.length) {
+        lifelinesUsed.phone = true;
+        const q = questionsInPlay[currentQuestion];
+        speakText(`Your friend suggests the answer might be ${q.answer}`);
+      }
+    }
+
+    function speakText(text) {
+      const synth = window.speechSynthesis;
+      const utterance = new SpeechSynthesisUtterance(text);
+      synth.speak(utterance);
+    }
+  </script>
+</body>
+</html>

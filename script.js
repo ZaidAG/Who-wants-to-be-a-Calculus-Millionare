@@ -1,5 +1,5 @@
 const questions = [
-  {
+    {
       question: "What is the value of the infinite geometric series: 2 + 1 + 1/2 + 1/4 + ...?",
       options: ["A) 3", "B) 4", "C) 5", "D) 6"],
       answer: "B",
@@ -256,143 +256,179 @@ const questions = [
         options: ["A) 2π", "B) π√5", "C) (π²)/2", "D) 2π√2"],
         answer: "B"
       }
-];
+    ];
 
-const categorizedQuestions = {
-  series: questions.slice(0, 15),
-  integrals: questions.slice(15, 30),
-  polar: questions.slice(30, 45)
-};
-
-let currentQuestion = 0;
-let questionsInPlay = [];
-let score = 0;
-let lifelinesUsed = {
-  fiftyFifty: false,
-  audience: false,
-  phone: false
-};
-
-const questionMusic = document.getElementById("questionMusic");
-const introMusic = document.getElementById("introMusic");
-const correctSound = document.getElementById("correctSound");
-const wrongSound = document.getElementById("wrongSound");
-
-window.onload = () => {
-  const introMusic = document.getElementById("introMusic");
-  introMusic.play();
-};
-
-function startGame() {
-  currentQuestion = 0;
-  score = 0;
-  lifelinesUsed = { fiftyFifty: false, audience: false, phone: false };
-  window.speechSynthesis.cancel();
-
-  const introMusic = document.getElementById("introMusic");
-  introMusic.pause();
-  introMusic.currentTime = 0;
-
-  const questionMusic = document.getElementById("questionMusic");
-  questionMusic.pause();
-  questionMusic.currentTime = 0;
-
-  document.getElementById("lifelines").style.display = "none";
-  document.getElementById("category-selection").style.display = "block";
-  document.getElementById("options").innerHTML = "";
-  document.getElementById("question").textContent = "Please select a category.";
-
-  document.getElementById("instructions-box").style.display = "none";
-  document.getElementById("instructions-button").style.display = "none";
-  document.getElementById("start-button").style.display = "none";
-}
-
-function handleAnswer(answer) {
-  window.speechSynthesis.cancel();
-  const correct = questionsInPlay[currentQuestion].answer;
-  const buttons = document.querySelectorAll("#options button");
-
-  buttons.forEach(btn => {
-    btn.disabled = true;
-    if (btn.textContent.startsWith(correct)) {
-      btn.classList.add("correct");
-    }
-    if (btn.textContent.startsWith(answer) && answer !== correct) {
-      btn.classList.add("incorrect");
-    }
-  });
-
-  const questionMusic = document.getElementById("questionMusic");
-  questionMusic.pause();
-  questionMusic.currentTime = 0;
-
-  if (answer === correct) {
-    const correctSound = document.getElementById("correctSound");
-    correctSound.play();
-    score += 100 * (currentQuestion + 1);
-    currentQuestion++;
-    setTimeout(() => {
-      if (currentQuestion < questionsInPlay.length) {
-        updateQuestionDisplay();
-      } else {
-        document.getElementById("question").textContent = `Congratulations! You won $${score}`;
-        document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';
-        speakText(`Congratulations! You won $${score}`);
-      }
-    }, 1500);
-  } else {
-    const wrongSound = document.getElementById("wrongSound");
-    const loserSound = document.getElementById("loserSound");
-
-    wrongSound.play();
-    wrongSound.onended = () => {
-      loserSound.play();
-
-      document.getElementById("question").textContent = `Wrong answer. You walk away with $${score}`;
-      document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
-      speakText(`Wrong answer. You walk away with $${score}`);
+    const categorizedQuestions = {
+      series: questions.slice(0, 15),
+      integrals: questions.slice(15, 30),
+      polar: questions.slice(30, 45)
     };
-  }
-}
 
-function useFiftyFifty() {
-  if (!lifelinesUsed.fiftyFifty && currentQuestion < questionsInPlay.length) {
-    lifelinesUsed.fiftyFifty = true;
-    const q = questionsInPlay[currentQuestion];
-    const correct = q.answer;
-    const incorrect = ["A", "B", "C", "D"].filter(opt => opt !== correct);
-    const randomIncorrect = incorrect[Math.floor(Math.random() * incorrect.length)];
-    const filtered = [correct, randomIncorrect];
-    const filteredOptions = q.options.filter(opt => filtered.includes(opt[0]));
-    const optionsContainer = document.getElementById("options");
-    optionsContainer.innerHTML = "";
-    filteredOptions.forEach(option => {
-      const button = document.createElement("button");
-      button.textContent = option;
-      button.onclick = () => handleAnswer(option[0]);
-      optionsContainer.appendChild(button);
-    });
-  }
-}
+    let currentQuestion = 0;
+    let questionsInPlay = [];
+    let score = 0;
+    let lifelinesUsed = {
+      fiftyFifty: false,
+      audience: false,
+      phone: false
+    };
 
-function useAskAudience() {
-  if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
-    lifelinesUsed.audience = true;
-    const q = questionsInPlay[currentQuestion];
-    speakText(`The audience thinks the answer is ${q.answer}`);
-  }
-}
+    const questionMusic = document.getElementById("questionMusic");
+    const introMusic = document.getElementById("introMusic");
+    const correctSound = document.getElementById("correctSound");
+    const wrongSound = document.getElementById("wrongSound");
 
-function usePhoneAFriend() {
-  if (!lifelinesUsed.phone && currentQuestion < questionsInPlay.length) {
-    lifelinesUsed.phone = true;
-    const q = questionsInPlay[currentQuestion];
-    speakText(`Your friend suggests the answer might be ${q.answer}`);
-  }
-}
+    window.onload = () => {
+      introMusic.play();
+    };
 
-function speakText(text) {
-  const synth = window.speechSynthesis;
-  const utterance = new SpeechSynthesisUtterance(text);
-  synth.speak(utterance);
-}
+    function startGame() {
+      currentQuestion = 0;
+      score = 0;
+      lifelinesUsed = { fiftyFifty: false, audience: false, phone: false };
+      window.speechSynthesis.cancel();
+
+      introMusic.pause();
+      introMusic.currentTime = 0;
+
+      questionMusic.pause();
+      questionMusic.currentTime = 0;
+
+      document.getElementById("lifelines").style.display = "none";
+      document.getElementById("category-selection").style.display = "block";
+      document.getElementById("options").innerHTML = "";
+      document.getElementById("question").textContent = "Please select a category.";
+
+      document.getElementById("instructions-box").style.display = "none";
+      document.getElementById("instructions-button").style.display = "none";
+      document.getElementById("start-button").style.display = "none"; // ✅ Hide Start Game
+    }
+
+    function toggleInstructions() {
+      const box = document.getElementById("instructions-box");
+      const isVisible = box.style.display === "block";
+
+      if (!isVisible) {
+        box.style.display = "block";
+        const instructionsText = `
+          Welcome to Who Wants to Be a Calculus Millionaire.
+          Click Start Game to begin.
+          Then choose a category: Series, Integrals, or Polar.
+          Answer 15 questions to win the game.
+          Use lifelines like fifty-fifty, Ask the Audience, and Phone a Friend.
+          But be careful — one wrong answer and the game ends.
+          Good luck!
+        `;
+        speakText(instructionsText);
+      } else {
+        box.style.display = "none";
+        window.speechSynthesis.cancel();
+      }
+    }
+
+    function selectCategory(category) {
+      questionsInPlay = categorizedQuestions[category];
+      currentQuestion = 0;
+      document.getElementById("category-selection").style.display = "none";
+      document.getElementById("lifelines").style.display = "block";
+      updateQuestionDisplay();
+    }
+
+    function updateQuestionDisplay() {
+      const q = questionsInPlay[currentQuestion];
+      document.getElementById("question").textContent = q.question;
+      const optionsContainer = document.getElementById("options");
+      optionsContainer.innerHTML = "";
+      q.options.forEach(option => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.onclick = () => handleAnswer(option[0]);
+        optionsContainer.appendChild(button);
+      });
+      document.getElementById("score").textContent = `Score: $${score}`;
+      speakText(q.question + ". " + q.options.join(". "));
+      questionMusic.play();
+    }
+
+    function handleAnswer(answer) {
+      window.speechSynthesis.cancel();
+      const correct = questionsInPlay[currentQuestion].answer;
+      const buttons = document.querySelectorAll("#options button");
+
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent.startsWith(correct)) {
+          btn.classList.add("correct");
+        }
+        if (btn.textContent.startsWith(answer) && answer !== correct) {
+          btn.classList.add("incorrect");
+        }
+      });
+
+      questionMusic.pause();
+      questionMusic.currentTime = 0;
+
+      if (answer === correct) {
+        correctSound.play();
+        score += 100 * (currentQuestion + 1);
+        currentQuestion++;
+        setTimeout(() => {
+          if (currentQuestion < questionsInPlay.length) {
+            updateQuestionDisplay();
+          } else {
+            document.getElementById("question").textContent = `Congratulations! You won $${score}`;
+            document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';
+            speakText(`Congratulations! You won $${score}`);
+          }
+        }, 1500);
+      } else {
+        wrongSound.play();
+        wrongSound.onended = () => {
+          document.getElementById("question").textContent = `Wrong answer. You walk away with $${score}`;
+          document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
+          speakText(`Wrong answer. You walk away with $${score}`);
+        };
+      }
+    }
+
+    function useFiftyFifty() {
+      if (!lifelinesUsed.fiftyFifty && currentQuestion < questionsInPlay.length) {
+        lifelinesUsed.fiftyFifty = true;
+        const q = questionsInPlay[currentQuestion];
+        const correct = q.answer;
+        const incorrect = ["A", "B", "C", "D"].filter(opt => opt !== correct);
+        const randomIncorrect = incorrect[Math.floor(Math.random() * incorrect.length)];
+        const filtered = [correct, randomIncorrect];
+        const filteredOptions = q.options.filter(opt => filtered.includes(opt[0]));
+        const optionsContainer = document.getElementById("options");
+        optionsContainer.innerHTML = "";
+        filteredOptions.forEach(option => {
+          const button = document.createElement("button");
+          button.textContent = option;
+          button.onclick = () => handleAnswer(option[0]);
+          optionsContainer.appendChild(button);
+        });
+      }
+    }
+
+    function useAskAudience() {
+      if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
+        lifelinesUsed.audience = true;
+        const q = questionsInPlay[currentQuestion];
+        speakText(`The audience thinks the answer is ${q.answer}`);
+      }
+    }
+
+    function usePhoneAFriend() {
+      if (!lifelinesUsed.phone && currentQuestion < questionsInPlay.length) {
+        lifelinesUsed.phone = true;
+        const q = questionsInPlay[currentQuestion];
+        speakText(`Your friend suggests the answer might be ${q.answer}`);
+      }
+    }
+
+    function speakText(text) {
+      const synth = window.speechSynthesis;
+      const utterance = new SpeechSynthesisUtterance(text);
+      synth.speak(utterance);
+    }

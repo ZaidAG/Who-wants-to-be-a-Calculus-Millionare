@@ -279,6 +279,7 @@ const correctSound = document.getElementById("correctSound");
 const wrongSound = document.getElementById("wrongSound");
 
 window.onload = () => {
+  const introMusic = document.getElementById("introMusic");
   introMusic.play();
 };
 
@@ -288,9 +289,11 @@ function startGame() {
   lifelinesUsed = { fiftyFifty: false, audience: false, phone: false };
   window.speechSynthesis.cancel();
 
+  const introMusic = document.getElementById("introMusic");
   introMusic.pause();
   introMusic.currentTime = 0;
 
+  const questionMusic = document.getElementById("questionMusic");
   questionMusic.pause();
   questionMusic.currentTime = 0;
 
@@ -302,52 +305,6 @@ function startGame() {
   document.getElementById("instructions-box").style.display = "none";
   document.getElementById("instructions-button").style.display = "none";
   document.getElementById("start-button").style.display = "none";
-}
-
-function toggleInstructions() {
-  const box = document.getElementById("instructions-box");
-  const isVisible = box.style.display === "block";
-
-  if (!isVisible) {
-    box.style.display = "block";
-    const instructionsText = `
-      Welcome to Who Wants to Be a Calculus Millionaire.
-      Click Start Game to begin.
-      Then choose a category: Series, Integrals, or Polar.
-      Answer 15 questions to win the game.
-      Use lifelines like fifty-fifty, Ask the Audience, and Phone a Friend.
-      But be careful — one wrong answer and the game ends.
-      Good luck!
-    `;
-    speakText(instructionsText);
-  } else {
-    box.style.display = "none";
-    window.speechSynthesis.cancel();
-  }
-}
-
-function selectCategory(category) {
-  questionsInPlay = categorizedQuestions[category];
-  currentQuestion = 0;
-  document.getElementById("category-selection").style.display = "none";
-  document.getElementById("lifelines").style.display = "block";
-  updateQuestionDisplay();
-}
-
-function updateQuestionDisplay() {
-  const q = questionsInPlay[currentQuestion];
-  document.getElementById("question").textContent = q.question;
-  const optionsContainer = document.getElementById("options");
-  optionsContainer.innerHTML = "";
-  q.options.forEach(option => {
-    const button = document.createElement("button");
-    button.textContent = option;
-    button.onclick = () => handleAnswer(option[0]);
-    optionsContainer.appendChild(button);
-  });
-  document.getElementById("score").textContent = `Score: $${score}`;
-  speakText(q.question + ". " + q.options.join(". "));
-  questionMusic.play();
 }
 
 function handleAnswer(answer) {
@@ -365,10 +322,12 @@ function handleAnswer(answer) {
     }
   });
 
+  const questionMusic = document.getElementById("questionMusic");
   questionMusic.pause();
   questionMusic.currentTime = 0;
 
   if (answer === correct) {
+    const correctSound = document.getElementById("correctSound");
     correctSound.play();
     score += 100 * (currentQuestion + 1);
     currentQuestion++;
@@ -382,8 +341,13 @@ function handleAnswer(answer) {
       }
     }, 1500);
   } else {
+    const wrongSound = document.getElementById("wrongSound");
+    const loserSound = document.getElementById("loserSound");
+
     wrongSound.play();
     wrongSound.onended = () => {
+      loserSound.play();
+
       document.getElementById("question").textContent = `Wrong answer. You walk away with $${score}`;
       document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
       speakText(`Wrong answer. You walk away with $${score}`);

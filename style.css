@@ -1,39 +1,114 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #f4f4f4;
-    color: #333;
-    margin: 0;
-    padding: 20px;
-  }
-  
-  #start-screen, #category-selection, #game-container, #end-screen {
-    max-width: 600px;
-    margin: auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
-  
-  button {
-    padding: 10px 20px;
-    margin: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #0056b3;
-  }
-  
-  #answers-container button {
-    display: block;
-    width: 100%;
-    margin: 10px 0;
-  }
-  
+  font-family: 'Trebuchet MS', sans-serif;
+  background-color: #0b0c2a;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+}
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: #1a1c3b;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+.logo {
+  width: 200px;
+  margin-bottom: 20px;
+}
+.question {
+  font-size: 22px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+.options button {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  background: linear-gradient(to right, #000066, #000099);
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+.options button:hover {
+  background: linear-gradient(to right, #000099, #0000cc);
+  transform: scale(1.02);
+}
+.options button.correct {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+  color: white;
+}
+.options button.incorrect {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white;
+}
+.score {
+  font-size: 20px;
+  margin-top: 20px;
+  color: #00ffcc;
+}
+.lifelines {
+  margin-top: 10px;
+  display: none;
+}
+.lifelines button {
+  margin: 5px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background-color: #2e3073;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+.start-button {
+  padding: 14px 24px;
+  font-size: 20px;
+  background: linear-gradient(to right, #f7b733, #fc4a1a);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.start-button:hover {
+  background: linear-gradient(to right, #fc4a1a, #f7b733);
+  transform: scale(1.05);
+}
+.category-selection button {
+  padding: 14px 24px;
+  font-size: 20px;
+  background: linear-gradient(to right, #f7b733, #fc4a1a);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.category-selection button:hover {
+  background: linear-gradient(to right, #fc4a1a, #f7b733);
+  transform: scale(1.05);
+}
+#instructions-box {
+  display: none;
+  margin-top: 20px;
+  text-align: left;
+  font-size: 16px;
+  background-color: #2a2c4d;
+  padding: 20px;
+  border-radius: 12px;
+}
+audio {
+  display: none;
+}

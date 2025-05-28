@@ -258,85 +258,62 @@ const questions = [
         }
 ];
 
-const categorizedQuestions = {
-  series: questions.slice(0, 15),
-  integrals: questions.slice(15, 30),
-  polar: questions.slice(30, 45)
-};
+const categories = ["infinite series", "integrals", "polar & parametric"];
+const sounds = [
+  { id: "introMusic", src: "intro.mp3" },
+  { id: "questionMusic", src: "question.mp3" },
+  { id: "correctSound", src: "correct.mp3" },
+  { id: "wrongSound", src: "wrong.mp3" },
+  { id: "winSound", src: "win.mp3" },
+  { id: "loseSound", src: "lose.mp3" }
+];
 
-let currentQuestion = 0;
+let currentCategory = null;
 let questionsInPlay = [];
+let currentQuestion = 0;
 let score = 0;
-let lifelinesUsed = {
-  fiftyFifty: false,
-  audience: false,
-  phone: false
-};
+let hasUsed50_50 = false;
 
-const questionMusic = document.getElementById("questionMusic");
 const introMusic = document.getElementById("introMusic");
+const questionMusic = document.getElementById("questionMusic");
 const correctSound = document.getElementById("correctSound");
 const wrongSound = document.getElementById("wrongSound");
+const winSound = document.getElementById("winSound");
+const loseSound = document.getElementById("loseSound");
 
 window.onload = () => {
   introMusic.play();
+  const categoryButtons = document.querySelectorAll(".category-button");
+  categoryButtons.forEach(btn =>
+    btn.addEventListener("click", () => {
+      startGame(btn.textContent.toLowerCase());
+    })
+  );
+
+  document.getElementById("fiftyFifty").addEventListener("click", use50_50);
 };
 
-function startGame() {
-  currentQuestion = 0;
+function startGame(category = null) {
   score = 0;
-  lifelinesUsed = { fiftyFifty: false, audience: false, phone: false };
-  window.speechSynthesis.cancel();
-
-  // Stop intro music if playing
-  if (!introMusic.paused) {
-    introMusic.pause();
-    introMusic.currentTime = 0;
-  }
-  // Stop question music and reset
-  if (!questionMusic.paused) {
-    questionMusic.pause();
-    questionMusic.currentTime = 0;
-  }
-
-  document.getElementById("lifelines").style.display = "none";
-  document.getElementById("category-selection").style.display = "block";
-  document.getElementById("options").innerHTML = "";
-  document.getElementById("question").textContent = "Please select a category.";
-
-  document.getElementById("instructions-box").style.display = "none";
-  document.getElementById("instructions-button").style.display = "none";
-  document.getElementById("start-button").style.display = "none";
-}
-
-function toggleInstructions() {
-  const box = document.getElementById("instructions-box");
-  const isVisible = box.style.display === "block";
-
-  if (!isVisible) {
-    box.style.display = "block";
-    const instructionsText = `
-      Welcome to Who Wants to Be a Calculus Millionaire.
-      Click Start Game to begin.
-      Then choose a category: Series, Integrals, or Polar.
-      Answer 15 questions to win the game.
-      Use lifelines like fifty-fifty, Ask the Audience, and Phone a Friend.
-      But be careful — one wrong answer and the game ends.
-      Good luck!
-    `;
-    speakText(instructionsText);
-  } else {
-    box.style.display = "none";
-    window.speechSynthesis.cancel();
-  }
-}
-
-function selectCategory(category) {
-  questionsInPlay = categorizedQuestions[category];
   currentQuestion = 0;
-  document.getElementById("category-selection").style.display = "none";
-  document.getElementById("lifelines").style.display = "block";
+  hasUsed50_50 = false;
+  currentCategory = category;
+  if (category) {
+    // Filter questions by category keywords in question text (simple method)
+    if (category === "infinite series") {
+      questionsInPlay = questions.filter(q => q.question.toLowerCase().includes("series") || q.question.toLowerCase().includes("sum") || q.question.toLowerCase().includes("geometric"));
+    } else if (category === "integrals") {
+      questionsInPlay = questions.filter(q => q.question.toLowerCase().includes("integral") || q.question.toLowerCase().includes("evaluate") || q.question.toLowerCase().includes("antiderivative") || q.question.toLowerCase().includes("dx"));
+    } else if (category === "polar & parametric") {
+      questionsInPlay = questions.filter(q => q.question.toLowerCase().includes("polar") || q.question.toLowerCase().includes("parametric") || q.question.toLowerCase().includes("dy/dx"));
+    } else {
+      questionsInPlay = [...questions];
+    }
+  } else {
+    questionsInPlay = [...questions];
+  }
   updateQuestionDisplay();
+  document.getElementById("fiftyFifty").disabled = false;
 }
 
 function updateQuestionDisplay() {
@@ -351,14 +328,21 @@ function updateQuestionDisplay() {
     optionsContainer.appendChild(button);
   });
   document.getElementById("score").textContent = `Score: $${score}`;
-
   speakText(q.question + ". " + q.options.join(". "));
 
-  // Play question music only if not already playing
-  if (questionMusic.paused) {
-    questionMusic.currentTime = 0;
-    questionMusic.play();
-  }
+  // Stop other audios and reset
+  introMusic.pause();
+  introMusic.currentTime = 0;
+  correctSound.pause();
+  correctSound.currentTime = 0;
+  wrongSound.pause();
+  wrongSound.currentTime = 0;
+  winSound.pause();
+  winSound.currentTime = 0;
+  loseSound.pause();
+  loseSound.currentTime = 0;
+
+  questionMusic.play();
 }
 
 function handleAnswer(answer) {
@@ -376,90 +360,62 @@ function handleAnswer(answer) {
     }
   });
 
-  // Pause question music when answer chosen
-  if (!questionMusic.paused) {
-    questionMusic.pause();
-    questionMusic.currentTime = 0;
-  }
+  questionMusic.pause();
+  questionMusic.currentTime = 0;
 
   if (answer === correct) {
     correctSound.play();
     score += 100 * (currentQuestion + 1);
     currentQuestion++;
-
     setTimeout(() => {
       if (currentQuestion < questionsInPlay.length) {
         updateQuestionDisplay();
       } else {
-        // Game won - no more questions
+        winSound.play();
         document.getElementById("question").textContent = `Congratulations! You won $${score}`;
-        winMusic.play();
         document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';
         speakText(`Congratulations! You won $${score}`);
-
-        // Stop any music and reset if needed
-        if (!questionMusic.paused) {
-          questionMusic.pause();
-          questionMusic.currentTime = 0;
-        }
       }
     }, 1500);
   } else {
-    // Wrong answer sound plays, then message and Try Again button
     wrongSound.play();
     wrongSound.onended = () => {
-      document.getElementById("question").textContent = `Wrong answer. You walk away with $${score}`;
-      loseMusic.play();
-      document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
-      speakText(`Wrong answer. You walk away with $${score}`);
-
-      // Make sure question music stopped
-      if (!questionMusic.paused) {
-        questionMusic.pause();
-        questionMusic.currentTime = 0;
-      }
+      loseSound.play();
+      loseSound.onended = () => {
+        document.getElementById("question").textContent = `Wrong answer. You walk away with $${score}`;
+        document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
+        speakText(`Wrong answer. You walk away with $${score}`);
+      };
     };
   }
 }
 
-function useFiftyFifty() {
-  if (!lifelinesUsed.fiftyFifty && currentQuestion < questionsInPlay.length) {
-    lifelinesUsed.fiftyFifty = true;
-    const q = questionsInPlay[currentQuestion];
-    const correct = q.answer;
-    const incorrect = ["A", "B", "C", "D"].filter(opt => opt !== correct);
-    const randomIncorrect = incorrect[Math.floor(Math.random() * incorrect.length)];
-    const filtered = [correct, randomIncorrect];
-    const filteredOptions = q.options.filter(opt => filtered.includes(opt[0]));
-    const optionsContainer = document.getElementById("options");
-    optionsContainer.innerHTML = "";
-    filteredOptions.forEach(option => {
-      const button = document.createElement("button");
-      button.textContent = option;
-      button.onclick = () => handleAnswer(option[0]);
-      optionsContainer.appendChild(button);
-    });
-  }
-}
-
-function useAskAudience() {
-  if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
-    lifelinesUsed.audience = true;
-    const q = questionsInPlay[currentQuestion];
-    speakText(`The audience thinks the answer is ${q.answer}`);
-  }
-}
-
-function usePhoneAFriend() {
-  if (!lifelinesUsed.phone && currentQuestion < questionsInPlay.length) {
-    lifelinesUsed.phone = true;
-    const q = questionsInPlay[currentQuestion];
-    speakText(`Your friend suggests the answer might be ${q.answer}`);
-  }
-}
-
 function speakText(text) {
-  const synth = window.speechSynthesis;
+  if (!window.speechSynthesis) return;
   const utterance = new SpeechSynthesisUtterance(text);
-  synth.speak(utterance);
+  utterance.lang = "en-US";
+  window.speechSynthesis.speak(utterance);
+}
+
+function use50_50() {
+  if (hasUsed50_50) return;
+  const q = questionsInPlay[currentQuestion];
+  const buttons = Array.from(document.querySelectorAll("#options button"));
+  const correctAnswer = q.answer;
+
+  // Filter out the correct answer button
+  const incorrectButtons = buttons.filter(btn => !btn.textContent.startsWith(correctAnswer));
+
+  // Randomly remove two incorrect buttons
+  let removed = 0;
+  while (removed < 2 && incorrectButtons.length > 0) {
+    const idx = Math.floor(Math.random() * incorrectButtons.length);
+    incorrectButtons[idx].disabled = true;
+    incorrectButtons[idx].style.visibility = "hidden";
+    incorrectButtons.splice(idx, 1);
+    removed++;
+  }
+
+  hasUsed50_50 = true;
+  document.getElementById("fiftyFifty").disabled = true;
 }

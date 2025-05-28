@@ -393,6 +393,7 @@ function handleAnswer(answer) {
       } else {
         // Game won - no more questions
         document.getElementById("question").textContent = `Congratulations! You won $${score}`;
+        winMusic.play();
         document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';
         speakText(`Congratulations! You won $${score}`);
 
@@ -408,6 +409,7 @@ function handleAnswer(answer) {
     wrongSound.play();
     wrongSound.onended = () => {
       document.getElementById("question").textContent = `Wrong answer. You walk away with $${score}`;
+      loseMusic.play();
       document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
       speakText(`Wrong answer. You walk away with $${score}`);
 

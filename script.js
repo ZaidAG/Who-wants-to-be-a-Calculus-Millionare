@@ -430,3 +430,12 @@ function speakText(text) {
   const utterance = new SpeechSynthesisUtterance(text);
   synth.speak(utterance);
 }
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    introMusic.play().catch(() => {
+      // Autoplay might be blocked, ignore errors silently
+    });
+  } else {
+    introMusic.pause();
+  }
+});

@@ -457,9 +457,12 @@
       score = 0;
       lifelinesUsed = { fiftyFifty: false, audience: false, phone: false };
       window.speechSynthesis.cancel();
-
-      introMusic.pause();
-      introMusic.currentTime = 0;
+      
+      winMusic.pause();
+      winMusic.currentTime = 0;
+      
+      loseMusic.pause();
+      loseMusic.currentTime = 0;
 
       questionMusic.pause();
       questionMusic.currentTime = 0;

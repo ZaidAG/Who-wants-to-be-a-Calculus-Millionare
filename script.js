@@ -170,7 +170,7 @@ const questions = [
       },
       {
         question: "Evaluate ∫xe^(x^2) dx",
-        options: ["A) 1/2e^(x^2) + C", "B) e^(x^2) + C", "C) (x^2)(e^x)+C", "D) "],
+        options: ["A) 1/2e^(x^2) + C", "B) e^(x^2) + C", "C) (x^2)(e^x)+C", "D)1/4(x^2)(e^x)+C "],
         answer: "A",
         difficulty: "hard"
       },
@@ -425,11 +425,16 @@ function usePhoneAFriend() {
   alert(`Friend thinks the answer might be: ${q.answer}`);
 }
 
-function speakText(text) {
-  const synth = window.speechSynthesis;
-  const utterance = new SpeechSynthesisUtterance(text);
-  synth.speak(utterance);
+function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1;
+    speechSynthesis.speak(utterance);
 }
+
+document.getElementById("instructions-btn").addEventListener("click", () => {
+    const instructionsText = "Welcome to the math quiz. Choose a category, answer the questions, and try to get the highest score. Good luck!";
+    speak(instructionsText);
+});
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     introMusic.play().catch(() => {

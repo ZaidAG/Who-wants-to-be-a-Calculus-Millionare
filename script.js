@@ -312,13 +312,26 @@ function startGame() {
 }
 
 function toggleInstructions() {
-  const instructionsBox = document.getElementById("instructions-box");
-  if (instructionsBox.style.display === "block") {
-    instructionsBox.style.display = "none";
-  } else {
-    instructionsBox.style.display = "block";
-  }
-}
+      const box = document.getElementById("instructions-box");
+      const isVisible = box.style.display === "block";
+
+      if (!isVisible) {
+        box.style.display = "block";
+        const instructionsText = `
+          Welcome to Who Wants to Be a Calculus Millionaire.
+          Click Start Game to begin.
+          Then choose a category: Series, Integrals, or Polar.
+          Answer 15 questions to win the game.
+          Use lifelines like fifty-fifty, Ask the Audience, and Phone a Friend.
+          But be careful — one wrong answer and the game ends.
+          Good luck!
+        `;
+        speakText(instructionsText);
+      } else {
+        box.style.display = "none";
+        window.speechSynthesis.cancel();
+      }
+    }
 
 function selectCategory(category) {
   questionsInPlay = categorizedQuestions[category];
@@ -397,18 +410,24 @@ function handleAnswer(answer) {
 }
 
 function useFiftyFifty() {
-  if (lifelinesUsed.fiftyFifty) return;
-  lifelinesUsed.fiftyFifty = true;
-  const correct = questionsInPlay[currentQuestion].answer;
-  const buttons = document.querySelectorAll("#options button");
-  let removed = 0;
-  buttons.forEach(button => {
-    if (!button.textContent.startsWith(correct) && removed < 2) {
-      button.disabled = true;
-      removed++;
+      if (!lifelinesUsed.fiftyFifty && currentQuestion < questionsInPlay.length) {
+        lifelinesUsed.fiftyFifty = true;
+        const q = questionsInPlay[currentQuestion];
+        const correct = q.answer;
+        const incorrect = ["A", "B", "C", "D"].filter(opt => opt !== correct);
+        const randomIncorrect = incorrect[Math.floor(Math.random() * incorrect.length)];
+        const filtered = [correct, randomIncorrect];
+        const filteredOptions = q.options.filter(opt => filtered.includes(opt[0]));
+        const optionsContainer = document.getElementById("options");
+        optionsContainer.innerHTML = "";
+        filteredOptions.forEach(option => {
+          const button = document.createElement("button");
+          button.textContent = option;
+          button.onclick = () => handleAnswer(option[0]);
+          optionsContainer.appendChild(button);
+        });
+      }
     }
-  });
-}
 
 function useAskAudience() {
   if (lifelinesUsed.audience) return;
@@ -425,22 +444,9 @@ function usePhoneAFriend() {
   alert(`Friend thinks the answer might be: ${q.answer}`);
 }
 
-function speak(text) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1;
-    speechSynthesis.speak(utterance);
-}
-
-document.getElementById("instructions-btn").addEventListener("click", () => {
-    const instructionsText = "Welcome to the math quiz. Choose a category, answer the questions, and try to get the highest score. Good luck!";
-    speak(instructionsText);
-});
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") {
-    introMusic.play().catch(() => {
-      // Autoplay might be blocked, ignore errors silently
-    });
-  } else {
-    introMusic.pause();
-  }
+function speakText(text) {
+      const synth = window.speechSynthesis;
+      const utterance = new SpeechSynthesisUtterance(text);
+      synth.speak(utterance);
+    }
 });

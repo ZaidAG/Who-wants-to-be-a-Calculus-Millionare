@@ -516,6 +516,7 @@
     }
 
     function selectCategory(category) {
+        stopIntroMusic();
         questionsInPlay = categorizedQuestions[category];
         currentQuestion = 0;
         document.getElementById("category-selection").style.display = "none";

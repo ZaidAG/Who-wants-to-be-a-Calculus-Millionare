@@ -516,14 +516,14 @@
     }
 
     function selectCategory(category) {
-      button.addEventListener('click', () => {
         questionsInPlay = categorizedQuestions[category];
         currentQuestion = 0;
         document.getElementById("category-selection").style.display = "none";
         document.getElementById("lifelines").style.display = "block";
-        stopIntroMusic();
+        button.addEventListener('click', () => {
+          stopIntroMusic();
+        });
         updateQuestionDisplay();
-      });
     }
 
     function updateQuestionDisplay() {

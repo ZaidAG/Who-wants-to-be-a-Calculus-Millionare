@@ -457,6 +457,10 @@
       }
     }
 
+    window.addEventListener('load', () => {
+      playIntroMusic();
+    });
+
     function startGame() {
       currentQuestion = 0;
       score = 0;

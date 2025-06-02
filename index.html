@@ -449,13 +449,13 @@
     const loseMusic = document.getElementById("loseMusic");
 
     function playIntroMusic() {
-    if (introMusic.paused) {
-      introMusic.play().catch(e => {
+      if (introMusic.paused) {
+        introMusic.play().catch(e => {
         // Handle autoplay restrictions by user gesture fallback
-        console.log('Intro music play prevented:', e);
-      });
+          console.log('Intro music play prevented:', e);
+        });
+      }
     }
-  }
 
     function startGame() {
       currentQuestion = 0;

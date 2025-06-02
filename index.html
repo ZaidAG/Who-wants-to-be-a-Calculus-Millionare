@@ -457,6 +457,13 @@
       }
     }
 
+    function stopIntroMusic() {
+      if (!introMusic.paused) {
+        introMusic.pause();
+        introMusic.currentTime = 0;
+      }
+    }
+
     window.addEventListener('load', () => {
       playIntroMusic();
     });
@@ -513,6 +520,7 @@
       currentQuestion = 0;
       document.getElementById("category-selection").style.display = "none";
       document.getElementById("lifelines").style.display = "block";
+      stopIntroMusic();
       updateQuestionDisplay();
     }
 

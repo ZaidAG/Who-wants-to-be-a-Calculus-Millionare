@@ -449,7 +449,7 @@
     const loseMusic = document.getElementById("loseMusic");
 
     window.onload = () => {
-      introMusic.play().catch(() => {}); // Play intro music on load; catch avoids console errors if autoplay blocked
+      introMusic.play() // Play intro music on load; catch avoids console errors if autoplay blocked
     };
 
     function startGame() {

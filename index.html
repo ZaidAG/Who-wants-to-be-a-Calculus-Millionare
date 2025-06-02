@@ -516,12 +516,14 @@
     }
 
     function selectCategory(category) {
-      questionsInPlay = categorizedQuestions[category];
-      currentQuestion = 0;
-      document.getElementById("category-selection").style.display = "none";
-      document.getElementById("lifelines").style.display = "block";
-      stopIntroMusic();
-      updateQuestionDisplay();
+      button.addEventListener('click', () => {
+        questionsInPlay = categorizedQuestions[category];
+        currentQuestion = 0;
+        document.getElementById("category-selection").style.display = "none";
+        document.getElementById("lifelines").style.display = "block";
+        stopIntroMusic();
+        updateQuestionDisplay();
+      });
     }
 
     function updateQuestionDisplay() {

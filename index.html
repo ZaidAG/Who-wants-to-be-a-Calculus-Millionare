@@ -700,14 +700,10 @@
     }
     function closeAudienceModal() {
       document.getElementById("audienceModal").style.display = "none";
-      const q = questionsInPlay[currentQuestion];
-      speakText(`The audience thinks the answer is ${q.answer}`);
     }
 
     function closePhoneModal() {
       document.getElementById("phoneModal").style.display = "none";
-      const q = questionsInPlay[currentQuestion];
-      speakText(`Your friend suggests the answer might be ${q.answer}`);
     }
   </script>
 </body>

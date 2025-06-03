@@ -119,6 +119,43 @@
     audio {
       display: none;
     }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.8);
+    }
+
+    .modal-content {
+      background-color: #1a1c3b;
+      margin: 15% auto;
+      padding: 20px;
+      border-radius: 12px;
+      width: 80%;
+      max-width: 400px;
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    }
+
+    .modal-content button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      background-color: #f7b733;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+    }
+
+    #audienceTimer, #phoneTimer {
+      font-size: 28px;
+      margin-top: 10px;
+      color: #00ffcc;
+    }
   </style>
 </head>
 <body>
@@ -163,7 +200,25 @@
     <audio id="wrongSound" src="./wrong.mp3" preload="auto"></audio>
     <audio id="winMusic" src="./win.mp3" loop preload></audio>
     <audio id="loseMusic" src="./lose.mp3" loop preload></audio>
-  </div>
+
+    <div id="audienceModal" class="modal">
+      <div class="modal-content">
+        <h2>Ask the Audience</h2>
+        <p>The audience is voting...</p>
+        <div id="audienceTimer">30</div>
+          <button onclick="closeAudienceModal()">Close</button>
+        </div>
+    </div>
+
+    <div id="phoneModal" class="modal">
+      <div class="modal-content">
+        <h2>Phone a Friend</h2>
+        <p>Your friend is thinking...</p>
+        <div id="phoneTimer">30</div>
+          <button onclick="closePhoneModal()">Close</button>
+        </div>
+      </div>
+    </div>
 
   <script>
     const questions = [
@@ -603,26 +658,56 @@
       }
     }
 
-    function useAskAudience() {
-      if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
-        lifelinesUsed.audience = true;
-        const q = questionsInPlay[currentQuestion];
-        speakText(`The audience thinks the answer is ${q.answer}`);
+      function useAskAudience() {
+        if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
+          lifelinesUsed.audience = true;
+          document.getElementById("audienceModal").style.display = "block";
+          let timeLeft = 30;
+          document.getElementById("audienceTimer").textContent = timeLeft;
+          const interval = setInterval(() => {
+            timeLeft--;
+            document.getElementById("audienceTimer").textContent = timeLeft;
+            if (timeLeft <= 0) {
+              clearInterval(interval);
+              closeAudienceModal();
+            }
+          }, 1000);
+        }
       }
-    }
 
     function usePhoneAFriend() {
       if (!lifelinesUsed.phone && currentQuestion < questionsInPlay.length) {
         lifelinesUsed.phone = true;
-        const q = questionsInPlay[currentQuestion];
-        speakText(`Your friend suggests the answer might be ${q.answer}`);
+        document.getElementById("phoneModal").style.display = "block";
+        let timeLeft = 30;
+        document.getElementById("phoneTimer").textContent = timeLeft;
+        const interval = setInterval(() => {
+          timeLeft--;
+          document.getElementById("phoneTimer").textContent = timeLeft;
+          if (timeLeft <= 0) {
+            clearInterval(interval);
+            closePhoneModal();
+          }
+        }, 1000);
       }
     }
+
 
     function speakText(text) {
       const synth = window.speechSynthesis;
       const utterance = new SpeechSynthesisUtterance(text);
       synth.speak(utterance);
+    }
+    function closeAudienceModal() {
+      document.getElementById("audienceModal").style.display = "none";
+      const q = questionsInPlay[currentQuestion];
+      speakText(`The audience thinks the answer is ${q.answer}`);
+    }
+
+    function closePhoneModal() {
+      document.getElementById("phoneModal").style.display = "none";
+      const q = questionsInPlay[currentQuestion];
+      speakText(`Your friend suggests the answer might be ${q.answer}`);
     }
   </script>
 </body>

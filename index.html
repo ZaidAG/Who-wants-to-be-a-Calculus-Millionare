@@ -225,6 +225,11 @@
     </div>
 
   <script>
+    const prizeLadder = [
+      100, 200, 300, 500, 1000,
+      2000, 4000, 8000, 16000, 32000,
+      64000, 125000, 250000, 500000, 1000000
+    ];
     const questions = [
     {
       question: "What is the value of the infinite geometric series: 2 + 1 + 1/2 + 1/4 + ...?",
@@ -619,7 +624,7 @@
 
       if (answer === correct) {
         correctSound.play();
-        score += 100 * (currentQuestion + 1);
+        score = prizeLadder[currentQuestion + 1];
         currentQuestion++;
         setTimeout(() => {
           if (currentQuestion < questionsInPlay.length) {

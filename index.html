@@ -649,7 +649,6 @@
         const filteredOptions = q.options.filter(opt => filtered.includes(opt[0]));
         const optionsContainer = document.getElementById("options");
         optionsContainer.innerHTML = "";
-        document.querySelector('fiftyFifty').style.opacity = "0.5";
         filteredOptions.forEach(option => {
           const button = document.createElement("button");
           button.textContent = option;
@@ -665,7 +664,6 @@
           document.getElementById("audienceModal").style.display = "block";
           let timeLeft = 30;
           document.getElementById("audienceTimer").textContent = timeLeft;
-          document.querySelector('audience').style.opacity = "0.5";
           const interval = setInterval(() => {
             timeLeft--;
             document.getElementById("audienceTimer").textContent = timeLeft;
@@ -683,7 +681,6 @@
         lifelinesUsed.phone = true;
         document.getElementById("phoneModal").style.display = "block";
         let timeLeft = 30;
-        document.querySelector('phone').style.opacity = "0.5";
         document.getElementById("phoneTimer").textContent = timeLeft;
         const interval = setInterval(() => {
           timeLeft--;

@@ -156,6 +156,10 @@
       margin-top: 10px;
       color: #00ffcc;
     }
+    .used-lifeline {
+      opacity: 0.5;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -641,6 +645,10 @@
     function useFiftyFifty() {
       if (!lifelinesUsed.fiftyFifty && currentQuestion < questionsInPlay.length) {
         lifelinesUsed.fiftyFifty = true;
+        const button = document.querySelector('#lifelines button:nth-child(1)');
+        button.classList.add("used-lifeline");
+        button.disabled = true;
+    
         const q = questionsInPlay[currentQuestion];
         const correct = q.answer;
         const incorrect = ["A", "B", "C", "D"].filter(opt => opt !== correct);
@@ -657,28 +665,35 @@
         });
       }
     }
-
-      function useAskAudience() {
-        if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
-          lifelinesUsed.audience = true;
-          document.getElementById("audienceModal").style.display = "block";
-          let timeLeft = 30;
+  
+    function useAskAudience() {
+      if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
+        lifelinesUsed.audience = true;
+        const button = document.querySelector('#lifelines button:nth-child(2)');
+        button.classList.add("used-lifeline");
+        button.disabled = true;
+    
+        document.getElementById("audienceModal").style.display = "block";
+        let timeLeft = 30;
+        document.getElementById("audienceTimer").textContent = timeLeft;
+        const interval = setInterval(() => {
+          timeLeft--;
           document.getElementById("audienceTimer").textContent = timeLeft;
-          const interval = setInterval(() => {
-            timeLeft--;
-            document.getElementById("audienceTimer").textContent = timeLeft;
-            if (timeLeft <= 0) {
-              clearInterval(interval);
-              closeAudienceModal();
-              document.querySelector('audience').style.opacity = "0.5";
-            }
-          }, 1000);
-        }
+          if (timeLeft <= 0) {
+            clearInterval(interval);
+            closeAudienceModal();
+          }
+        }, 1000);
       }
-
+    }
+    
     function usePhoneAFriend() {
       if (!lifelinesUsed.phone && currentQuestion < questionsInPlay.length) {
         lifelinesUsed.phone = true;
+        const button = document.querySelector('#lifelines button:nth-child(3)');
+        button.classList.add("used-lifeline");
+        button.disabled = true;
+    
         document.getElementById("phoneModal").style.display = "block";
         let timeLeft = 30;
         document.getElementById("phoneTimer").textContent = timeLeft;
@@ -688,12 +703,10 @@
           if (timeLeft <= 0) {
             clearInterval(interval);
             closePhoneModal();
-            document.querySelector('phone').style.opacity = "0.5";
           }
         }, 1000);
       }
     }
-
 
     function speakText(text) {
       const synth = window.speechSynthesis;

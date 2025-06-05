@@ -630,6 +630,7 @@
           if (currentQuestion < questionsInPlay.length) {
             updateQuestionDisplay();
           } else {
+            score = prizeLadder[14];
             document.getElementById("question").textContent = `Congratulations! You won $${score}`;
             winMusic.play();
             document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';

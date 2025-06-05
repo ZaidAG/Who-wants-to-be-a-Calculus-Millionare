@@ -74,6 +74,7 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
+      transition: opacity 0.4s ease;
     }
     .start-button {
       padding: 14px 24px;
@@ -555,6 +556,12 @@
       document.getElementById("instructions-box").style.display = "none";
       document.getElementById("instructions-button").style.display = "none";
       document.getElementById("start-button").style.display = "none"; // ✅ Hide Start Game
+
+      const lifelineButtons = document.querySelectorAll('#lifelines button');
+        lifelineButtons.forEach(btn => {
+          btn.classList.remove('used-lifeline');
+          btn.disabled = false;
+      });
     }
 
     function toggleInstructions() {

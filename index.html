@@ -770,17 +770,28 @@
       const currentQ = questionsInPlay[currentQuestion];
       const difficulty = (currentQ && currentQ.difficulty) ? currentQ.difficulty : "medium";
       let timeLeft = getTimeForDifficulty(difficulty);
-    
       const timerDisplay = document.getElementById("question-timer");
+    
       timerDisplay.textContent = `Time left: ${timeLeft}s`;
+      timerDisplay.classList.remove("flash");
+    
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = `Time left: ${timeLeft}s`;
+    
+        if (timeLeft <= 5) {
+          timerDisplay.classList.add("flash");
+        }
     
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           timerDisplay.textContent = "Time's up!";
+          timerDisplay.classList.remove("flash");
           handleAnswer("TIMEOUT");
         }
       }, 1000);
     }
+
 
     function useFiftyFifty() {
       if (!lifelinesUsed.fiftyFifty && currentQuestion < questionsInPlay.length) {

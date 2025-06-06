@@ -183,6 +183,7 @@
     <img src="./Logo.png" alt="Millionaire Calculus Logo" class="logo" />
     <h1>Who Wants to Be a Calculus Millionaire?</h1>
     <div class="question" id="question">Click Start to Begin</div>
+    <div class="timer" id="question-timer">Time left: 30s</div>
     <div class="options" id="options"></div>
     <button class="start-button" onclick="startGame()" id="start-button">Start Game</button>
     <button class="start-button" onclick="toggleInstructions()" id="instructions-button">Instructions</button>
@@ -213,7 +214,6 @@
     </div>
 
     <div class="score" id="score">Score: $0</div>
-    <div class="timer" id="question-timer">Time left: 30s</div>
 
     <audio id="introMusic" src="./intro.mp3" loop preload="auto"></audio>
     <audio id="questionMusic" src="./song.mp3" loop preload="auto"></audio>
@@ -592,6 +592,12 @@
           btn.classList.remove('used-lifeline');
           btn.disabled = false;
       });
+      clearInterval(timerInterval);
+      const timerEl = document.getElementById("question-timer");
+      if (timerEl) {
+        timerEl.textContent = "Time left: 0s";
+        timerEl.classList.remove("flash");
+}
     }
 
     function toggleInstructions() {
@@ -761,7 +767,8 @@
     function startQuestionTimer() {
       clearInterval(timerInterval); // Clear previous timer
     
-      const difficulty = questionsInPlay[currentQuestion].difficulty || "medium";
+      const currentQ = questionsInPlay[currentQuestion];
+      const difficulty = (currentQ && currentQ.difficulty) ? currentQ.difficulty : "medium";
       let timeLeft = getTimeForDifficulty(difficulty);
     
       const timerDisplay = document.getElementById("question-timer");

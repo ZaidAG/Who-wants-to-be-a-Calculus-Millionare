@@ -637,10 +637,42 @@
           if (currentQuestion < questionsInPlay.length) {
             updateQuestionDisplay();
           } else {
-            document.getElementById("question").textContent = `Congratulations! You won $${score}`;
+            document.getElementById("question").textContent = `Congratulations! You won $${score}
+            In the quiet world of numbers, I stand,
+              Lost in the shadows of equations so grand.
+             Integrals curve like tears in the night,
+             Derivatives drift, out of mind, out of sight.
+            The limits approach, but never arrive,
+             Chasing the function, yet I can't survive.
+             Theorems like promises, broken and cold,
+             As the answers slip through, too distant to hold.
+            Infinite sums stretch endlessly on,
+             Like a melody fading, the moment's gone.
+             A chain of mistakes, a chain of despair,
+             As the x's and y's vanish in air.
+            And though I try, I cannot embrace,
+             The beauty that hides in this abstract place.
+             For calculus, a puzzle never solved,
+             Leaves my heart aching, unresolved.`;
             winMusic.play();
             document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';
-            speakText(`Congratulations! You won $${score}`);
+            speakText(`Congratulations! You won $${score}
+            In the quiet world of numbers, I stand,
+           Lost in the shadows of equations so grand.
+           Integrals curve like tears in the night,
+           Derivatives drift, out of mind, out of sight.
+          The limits approach, but never arrive,
+           Chasing the function, yet I can't survive.
+           Theorems like promises, broken and cold,
+           As the answers slip through, too distant to hold.
+          Infinite sums stretch endlessly on,
+           Like a melody fading, the moment's gone.
+           A chain of mistakes, a chain of despair,
+           As the x's and y's vanish in air.
+          And though I try, I cannot embrace,
+           The beauty that hides in this abstract place.
+           For calculus, a puzzle never solved,
+           Leaves my heart aching, unresolved.`);
           }
         }, 1500);
       } else {

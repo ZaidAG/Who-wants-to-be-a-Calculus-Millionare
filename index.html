@@ -614,6 +614,8 @@
       document.getElementById("question").textContent = q.question;
       document.getElementById("options").innerHTML = "";
       const optionsContainer = document.getElementById("options");
+
+      questionMusic.play();
       // Speak the question first
       speakText(q.question, () => {
         // After question is spoken, reveal options one by one

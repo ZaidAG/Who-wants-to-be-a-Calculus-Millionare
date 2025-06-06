@@ -806,10 +806,14 @@
     function speakText(text, onEnd = null) {
       const synth = window.speechSynthesis;
       const utterance = new SpeechSynthesisUtterance(text);
+    
+      // ↓ Slow down the speaking rate (0.1–10; default is 1)
+      utterance.rate = 0.8;
+    
       if (onEnd) {
         utterance.onend = onEnd;
       }
-      synth.cancel(); // Cancel any ongoing speech
+      synth.cancel(); // cancel any ongoing speech
       synth.speak(utterance);
     }
     

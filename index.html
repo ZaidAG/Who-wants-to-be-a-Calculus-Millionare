@@ -213,6 +213,7 @@
     </div>
 
     <div class="score" id="score">Score: $0</div>
+    <div class="timer" id="question-timer">Time left: 30s</div>
 
     <audio id="introMusic" src="./intro.mp3" loop preload="auto"></audio>
     <audio id="questionMusic" src="./song.mp3" loop preload="auto"></audio>
@@ -241,6 +242,18 @@
     </div>
 
   <script>
+    function getTimeForDifficulty(difficulty) {
+      switch (difficulty.toLowerCase()) {
+        case "easy":
+          return 45;
+        case "medium":
+          return 75;
+        case "hard":
+          return 105;
+        default:
+          return 60; // fallback
+      }
+    }
     const prizeLadder = [
       10, 100, 200, 300, 500, 1000,
       2000, 4000, 8000, 16000, 32000,
@@ -527,6 +540,8 @@
     const wrongSound = document.getElementById("wrongSound");
     const winMusc = document.getElementById("winMusic");
     const loseMusic = document.getElementById("loseMusic");
+    let questionTime = 30; // seconds
+    let timerInterval = null;
 
     function playIntroMusic() {
       if (introMusic.paused) {
@@ -632,6 +647,7 @@
       speakText(q.question, () => {
         showOptionsSequentially(q.options, 0);
       });
+      startQuestionTimer();
     }
 
     function showOptionsSequentially(options, index) {
@@ -663,6 +679,7 @@
     }
 
     function handleAnswer(answer) {
+      clearInterval(timerInterval);
       window.speechSynthesis.cancel();
       const correct = questionsInPlay[currentQuestion].answer;
       const buttons = document.querySelectorAll("#options button");
@@ -729,12 +746,33 @@
       } else {
         wrongSound.play();
         wrongSound.onended = () => {
-          document.getElementById("question").textContent = `Wrong answer. You walk away with $${score}`;
+          const message = (answer === "TIMEOUT")
+            ? "Time's up. You walk away with"
+            : "Wrong answer. You walk away with";
+          
+          document.getElementById("question").textContent = `${message} $${score}`;
           loseMusic.play();
           document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
-          speakText(`Wrong answer. You walk away with $${score}`);
+          speakText(`${message} $${score}`);
         };
       }
+    }
+
+    function startQuestionTimer() {
+      clearInterval(timerInterval); // Clear previous timer
+    
+      const difficulty = questionsInPlay[currentQuestion].difficulty || "medium";
+      let timeLeft = getTimeForDifficulty(difficulty);
+    
+      const timerDisplay = document.getElementById("question-timer");
+      timerDisplay.textContent = `Time left: ${timeLeft}s`;
+    
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          timerDisplay.textContent = "Time's up!";
+          handleAnswer("TIMEOUT");
+        }
+      }, 1000);
     }
 
     function useFiftyFifty() {

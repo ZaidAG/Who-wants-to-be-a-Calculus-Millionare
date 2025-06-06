@@ -173,7 +173,8 @@
     }
     
     .option-animate {
-      animation: fadeScaleIn 0.4s ease forwards;
+      transform: scale(0.95);
+      opacity: 0;
     }
   </style>
 </head>
@@ -611,29 +612,54 @@
 
     function updateQuestionDisplay() {
       const q = questionsInPlay[currentQuestion];
+    
+      // Update the question text
       document.getElementById("question").textContent = q.question;
-      document.getElementById("options").innerHTML = "";
+    
+      // Clear and prepare the options container
       const optionsContainer = document.getElementById("options");
-
-      questionMusic.play();
-      // Speak the question first
-      speakText(q.question, () => {
-        // After question is spoken, reveal options one by one
-        q.options.forEach((option, index) => {
-          setTimeout(() => {
-            const button = document.createElement("button");
-            button.textContent = option;
-            button.style.opacity = 0; // Ensure it's initially invisible
-            button.classList.add("option-animate");
-            button.onclick = () => handleAnswer(option[0]);
-            optionsContainer.appendChild(button);
-          
-            // Speak this option
-            speakText(option);
-          }, 1000 * index);
-        });
-      });
+      optionsContainer.innerHTML = "";
+    
+      // Update the score display
       document.getElementById("score").textContent = `Score: $${score}`;
+    
+      // Ensure intro/other sounds stop
+      window.speechSynthesis.cancel();
+      questionMusic.currentTime = 0;
+      questionMusic.play();
+    
+      // Step 1: Speak the question, then reveal and speak options one by one
+      speakText(q.question, () => {
+        showOptionsSequentially(q.options, 0);
+      });
+    }
+
+    function showOptionsSequentially(options, index) {
+      if (index >= options.length) return; // done
+    
+      const option = options[index];
+    
+      // Create the button (initially hidden)
+      const button = document.createElement("button");
+      button.textContent = option;
+      button.style.opacity = 0;
+      button.classList.add("option-animate");
+      button.onclick = () => handleAnswer(option[0]);
+    
+      const optionsContainer = document.getElementById("options");
+      optionsContainer.appendChild(button);
+    
+      // Animate it in
+      requestAnimationFrame(() => {
+        button.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+        button.style.transform = "scale(1)";
+        button.style.opacity = 1;
+      });
+    
+      // Speak this option, then move to the next after speaking
+      speakText(option, () => {
+        showOptionsSequentially(options, index + 1);
+      });
     }
 
     function handleAnswer(answer) {

@@ -161,6 +161,20 @@
       opacity: 0.5;
       pointer-events: none;
     }
+    @keyframes fadeScaleIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    .option-animate {
+      animation: fadeScaleIn 0.4s ease forwards;
+    }
   </style>
 </head>
 <body>
@@ -598,17 +612,26 @@
     function updateQuestionDisplay() {
       const q = questionsInPlay[currentQuestion];
       document.getElementById("question").textContent = q.question;
+      document.getElementById("options").innerHTML = "";
       const optionsContainer = document.getElementById("options");
-      optionsContainer.innerHTML = "";
-      q.options.forEach(option => {
-        const button = document.createElement("button");
-        button.textContent = option;
-        button.onclick = () => handleAnswer(option[0]);
-        optionsContainer.appendChild(button);
+      // Speak the question first
+      speakText(q.question, () => {
+        // After question is spoken, reveal options one by one
+        q.options.forEach((option, index) => {
+          setTimeout(() => {
+            const button = document.createElement("button");
+            button.textContent = option;
+            button.style.opacity = 0; // Ensure it's initially invisible
+            button.classList.add("option-animate");
+            button.onclick = () => handleAnswer(option[0]);
+            optionsContainer.appendChild(button);
+          
+            // Speak this option
+            speakText(option);
+          }, 1000 * index);
+        });
       });
       document.getElementById("score").textContent = `Score: $${score}`;
-      speakText(q.question + ". " + q.options.join(". "));
-      questionMusic.play();
     }
 
     function handleAnswer(answer) {
@@ -752,13 +775,19 @@
       }
     }
 
-    function speakText(text) {
+    function speakText(text, onEnd = null) {
       const synth = window.speechSynthesis;
       const utterance = new SpeechSynthesisUtterance(text);
+      if (onEnd) {
+        utterance.onend = onEnd;
+      }
+      synth.cancel(); // Cancel any ongoing speech
       synth.speak(utterance);
     }
+    
     function closeAudienceModal() {
       document.getElementById("audienceModal").style.display = "none";
+      speakText(`The audience thinks the answer is ${q.answer}`);
     }
 
     function closePhoneModal() {
@@ -767,4 +796,3 @@
   </script>
 </body>
 </html>
-

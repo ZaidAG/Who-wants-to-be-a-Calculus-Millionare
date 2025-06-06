@@ -637,7 +637,7 @@
           if (currentQuestion < questionsInPlay.length) {
             updateQuestionDisplay();
           } else {
-            document.getElementById("question").textContent = `Congratulations! You won $${score}
+            document.getElementById("question").textContent = `Congratulations! You won $${score}. Here is a poem made by Benton for a reward 
             In the quiet world of numbers, I stand,
               Lost in the shadows of equations so grand.
              Integrals curve like tears in the night,
@@ -656,7 +656,7 @@
              Leaves my heart aching, unresolved.`;
             winMusic.play();
             document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';
-            speakText(`Congratulations! You won $${score}
+            speakText(`Congratulations! You won $${score}, Here is a poem made by Benton for a reward 
             In the quiet world of numbers, I stand,
            Lost in the shadows of equations so grand.
            Integrals curve like tears in the night,

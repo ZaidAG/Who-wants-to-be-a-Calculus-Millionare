@@ -851,6 +851,8 @@
         button.classList.add("used-lifeline");
         button.disabled = true;
     
+        clearInterval(timerInterval); // pause timer
+    
         const q = questionsInPlay[currentQuestion];
         const correct = q.answer;
         const incorrect = ["A", "B", "C", "D"].filter(opt => opt !== correct);
@@ -865,6 +867,8 @@
           button.onclick = () => handleAnswer(option[0]);
           optionsContainer.appendChild(button);
         });
+    
+        startQuestionTimer(); // resume timer
       }
     }
   
@@ -874,7 +878,8 @@
         const button = document.querySelector('#lifelines button:nth-child(2)');
         button.classList.add("used-lifeline");
         button.disabled = true;
-    
+        clearInterval(timerInterval);
+
         document.getElementById("audienceModal").style.display = "block";
         let timeLeft = 30;
         document.getElementById("audienceTimer").textContent = timeLeft;
@@ -895,6 +900,7 @@
         const button = document.querySelector('#lifelines button:nth-child(3)');
         button.classList.add("used-lifeline");
         button.disabled = true;
+        clearInterval(timerInterval);
     
         document.getElementById("phoneModal").style.display = "block";
         let timeLeft = 30;
@@ -927,10 +933,12 @@
     function closeAudienceModal() {
       document.getElementById("audienceModal").style.display = "none";
       speakText(`The audience thinks the answer is ${q.answer}`);
+      startQuestionTimer();
     }
 
     function closePhoneModal() {
       document.getElementById("phoneModal").style.display = "none";
+      startQuestionTimer();
     }
   </script>
 </body>

@@ -824,14 +824,15 @@
     
       timerInterval = setInterval(() => {
         timeLeft--;
-        // ✅ Play tick sound
-        tickSound.currentTime = 0;
-        tickSound.play().catch(() => {});
-      
         timerDisplay.textContent = `Time left: ${timeLeft}s`;
       
         const percentage = (timeLeft / totalTime) * 100;
         timerBar.style.width = `${percentage}%`;
+      
+        if (timeLeft <= 10 && timeLeft > 0) {
+          tickSound.currentTime = 0;
+          tickSound.play().catch(() => {});
+        }
       
         if (timeLeft <= 5) {
           timerDisplay.classList.add("flash");
@@ -843,6 +844,8 @@
           timerDisplay.textContent = "Time's up!";
           timerDisplay.classList.remove("flash");
           timerBarContainer.style.display = "none";
+          tickSound.pause();
+          tickSound.currentTime = 0;
           handleAnswer("TIMEOUT");
         }
       }, 1000);

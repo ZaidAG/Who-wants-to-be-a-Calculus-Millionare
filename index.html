@@ -184,14 +184,33 @@
     .timer.flash {
       animation: flashRed 1s infinite;
     }
+    .timer-bar-container {
+      width: 100%;
+      background-color: #333;
+      height: 12px;
+      border-radius: 6px;
+      margin-top: 10px;
+      overflow: hidden;
+      display: none; /* hidden by default */
+    }
+    
+    .timer-bar {
+      height: 100%;
+      width: 100%;
+      background-color: #00ffcc;
+      transition: width 1s linear;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <img src="./Logo.png" alt="Millionaire Calculus Logo" class="logo" />
     <h1>Who Wants to Be a Calculus Millionaire?</h1>
-    <div class="question" id="question" style="display: none;">Click Start to Begin</div>
-    <div class="timer" id="question-timer">Time left: 30s</div>
+    <div class="question" id="question">Click Start to Begin</div>
+    <div class="timer" id="question-timer" style="display: none;">Time left: 30s</div>
+    <div class="timer-bar-container">
+      <div class="timer-bar" id="timer-bar"></div>
+    </div>
     <div class="options" id="options"></div>
     <button class="start-button" onclick="startGame()" id="start-button">Start Game</button>
     <button class="start-button" onclick="toggleInstructions()" id="instructions-button">Instructions</button>
@@ -602,6 +621,7 @@
       });
       document.getElementById("question-timer").style.display = "none";
       document.getElementById("score").style.display = "none";
+      document.querySelector(".timer-bar-container").style.display = "none";
       clearInterval(timerInterval);
       const timerEl = document.getElementById("question-timer");
       if (timerEl) {
@@ -743,6 +763,7 @@
             winMusic.play();
             document.getElementById("question-timer").style.display = "none";
             document.getElementById("score").style.display = "none";
+            document.querySelector(".timer-bar-container").style.display = "none";
             document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';
             speakText(`Congratulations! You won $${score}, Here is a poem made by Benton for a reward 
             In the quiet world of numbers, I stand,
@@ -774,6 +795,7 @@
           loseMusic.play();
           document.getElementById("question-timer").style.display = "none";
           document.getElementById("score").style.display = "none";
+          document.querySelector(".timer-bar-container").style.display = "none";
           document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
           speakText(`${message} $${score}`);
         };
@@ -781,33 +803,46 @@
     }
 
     function startQuestionTimer() {
-      clearInterval(timerInterval); // Clear previous timer
+      clearInterval(timerInterval);
     
       const currentQ = questionsInPlay[currentQuestion];
       const difficulty = (currentQ && currentQ.difficulty) ? currentQ.difficulty : "medium";
       let timeLeft = getTimeForDifficulty(difficulty);
+      const totalTime = timeLeft;
+    
       const timerDisplay = document.getElementById("question-timer");
+      const timerBarContainer = document.querySelector(".timer-bar-container");
+      const timerBar = document.getElementById("timer-bar");
     
       timerDisplay.textContent = `Time left: ${timeLeft}s`;
       timerDisplay.classList.remove("flash");
+      timerBarContainer.style.display = "block";
+      timerBar.style.width = "100%";
+      timerBar.style.backgroundColor = "#00ffcc";
     
       timerInterval = setInterval(() => {
         timeLeft--;
         timerDisplay.textContent = `Time left: ${timeLeft}s`;
     
+        // Update bar width
+        const percentage = (timeLeft / totalTime) * 100;
+        timerBar.style.width = `${percentage}%`;
+    
+        // Turn bar red in last 5 seconds
         if (timeLeft <= 5) {
           timerDisplay.classList.add("flash");
+          timerBar.style.backgroundColor = "red";
         }
     
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           timerDisplay.textContent = "Time's up!";
           timerDisplay.classList.remove("flash");
+          timerBarContainer.style.display = "none";
           handleAnswer("TIMEOUT");
         }
       }, 1000);
     }
-
 
     function useFiftyFifty() {
       if (!lifelinesUsed.fiftyFifty && currentQuestion < questionsInPlay.length) {

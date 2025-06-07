@@ -190,7 +190,7 @@
   <div class="container">
     <img src="./Logo.png" alt="Millionaire Calculus Logo" class="logo" />
     <h1>Who Wants to Be a Calculus Millionaire?</h1>
-    <div class="question" id="question">Click Start to Begin</div>
+    <div class="question" id="question" style="display: none;">Click Start to Begin</div>
     <div class="timer" id="question-timer">Time left: 30s</div>
     <div class="options" id="options"></div>
     <button class="start-button" onclick="startGame()" id="start-button">Start Game</button>
@@ -221,7 +221,7 @@
       <button onclick="usePhoneAFriend()">Phone a Friend</button>
     </div>
 
-    <div class="score" id="score">Score: $0</div>
+    <div class="score" id="score" style="display: none;">Score: $0</div>
 
     <audio id="introMusic" src="./intro.mp3" loop preload="auto"></audio>
     <audio id="questionMusic" src="./song.mp3" loop preload="auto"></audio>
@@ -600,6 +600,8 @@
           btn.classList.remove('used-lifeline');
           btn.disabled = false;
       });
+      document.getElementById("question-timer").style.display = "none";
+      document.getElementById("score").style.display = "none";
       clearInterval(timerInterval);
       const timerEl = document.getElementById("question-timer");
       if (timerEl) {
@@ -640,8 +642,10 @@
     }
 
     function updateQuestionDisplay() {
+      document.getElementById("question-timer").style.display = "block";
+      document.getElementById("score").style.display = "block";
       const q = questionsInPlay[currentQuestion];
-    
+
       // Update the question text
       document.getElementById("question").textContent = q.question;
     
@@ -737,6 +741,8 @@
              For calculus, a puzzle never solved,
              Leaves my heart aching, unresolved.`;
             winMusic.play();
+            document.getElementById("question-timer").style.display = "none";
+            document.getElementById("score").style.display = "none";
             document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Play Again</button>';
             speakText(`Congratulations! You won $${score}, Here is a poem made by Benton for a reward 
             In the quiet world of numbers, I stand,
@@ -766,6 +772,8 @@
           
           document.getElementById("question").textContent = `${message} $${score}`;
           loseMusic.play();
+          document.getElementById("question-timer").style.display = "none";
+          document.getElementById("score").style.display = "none";
           document.getElementById("options").innerHTML = '<button class="start-button" onclick="startGame()">Try Again</button>';
           speakText(`${message} $${score}`);
         };

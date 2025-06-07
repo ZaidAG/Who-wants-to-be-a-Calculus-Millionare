@@ -248,6 +248,7 @@
     <audio id="wrongSound" src="./wrong.mp3" preload="auto"></audio>
     <audio id="winMusic" src="./win.mp3" loop preload></audio>
     <audio id="loseMusic" src="./lose.mp3" loop preload></audio>
+    <audio id="tickSound" src="./tick.mp3" preload="auto"></audio>
 
     <div id="audienceModal" class="modal">
       <div class="modal-content">
@@ -567,6 +568,7 @@
     const wrongSound = document.getElementById("wrongSound");
     const winMusic = document.getElementById("winMusic");
     const loseMusic = document.getElementById("loseMusic");
+    const tickSound = document.getElementById("tickSound");
     let questionTime = 30; // seconds
     let timerInterval = null;
 
@@ -822,18 +824,20 @@
     
       timerInterval = setInterval(() => {
         timeLeft--;
+        // ✅ Play tick sound
+        tickSound.currentTime = 0;
+        tickSound.play().catch(() => {});
+      
         timerDisplay.textContent = `Time left: ${timeLeft}s`;
-    
-        // Update bar width
+      
         const percentage = (timeLeft / totalTime) * 100;
         timerBar.style.width = `${percentage}%`;
-    
-        // Turn bar red in last 5 seconds
+      
         if (timeLeft <= 5) {
           timerDisplay.classList.add("flash");
           timerBar.style.backgroundColor = "red";
         }
-    
+      
         if (timeLeft <= 0) {
           clearInterval(timerInterval);
           timerDisplay.textContent = "Time's up!";

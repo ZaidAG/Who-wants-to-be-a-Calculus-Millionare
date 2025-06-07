@@ -939,7 +939,13 @@
     
     function closeAudienceModal() {
       document.getElementById("audienceModal").style.display = "none";
-      speakText(`The audience thinks the answer is ${q.answer}`);
+    
+      const q = questionsInPlay[currentQuestion];
+      const correctAnswer = q.answer;
+      const correctOption = q.options.find(opt => opt.startsWith(correctAnswer));
+    
+      const message = `The audience thinks the correct answer is ${correctOption}`;
+      speakText(message);
       startQuestionTimer();
     }
 

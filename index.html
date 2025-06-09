@@ -664,7 +664,7 @@
 
     function selectCategory(category) {
         stopIntroMusic();
-        questionsInPlay = shuffleArray([...categorizedQuestions[category]]);
+        questionsInPlay = shuffleArray([...categorizedQuestions[category]]).slice(0, 15);
         currentQuestion = 0;
         document.getElementById("category-selection").style.display = "none";
         document.getElementById("lifelines").style.display = "block";

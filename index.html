@@ -891,6 +891,7 @@
       if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
         lifelinesUsed.audience = true;
         audienceHintGiven = false;
+        let audienceInterval = null;
         const button = document.querySelector('#lifelines button:nth-child(2)');
         button.classList.add("used-lifeline");
         button.disabled = true;
@@ -899,7 +900,7 @@
         document.getElementById("audienceModal").style.display = "block";
         let timeLeft = 30;
         document.getElementById("audienceTimer").textContent = timeLeft;
-        const interval = setInterval(() => {
+        audienceInterval = setInterval(() => {
           timeLeft--;
           document.getElementById("audienceTimer").textContent = timeLeft;
           if (timeLeft <= 0) {

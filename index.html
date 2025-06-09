@@ -950,18 +950,21 @@
       clearInterval(audienceInterval);
       document.getElementById("audienceModal").style.display = "none";
     
-      if (audienceHintGiven) return; // ✅ already gave the hint
+      if (audienceHintGiven) return; // already gave the hint
     
       const q = questionsInPlay[currentQuestion];
+      if (!q) return; // fail safe
+    
       const correctAnswer = q.answer;
       const correctOption = q.options.find(opt => opt.startsWith(correctAnswer));
     
+      if (!correctOption) return; // avoid crashing if missing
+    
       const message = `The audience thinks the correct answer is ${correctOption}`;
       speakText(message);
-    
-      audienceHintGiven = true; // ✅ mark as done
+      audienceHintGiven = true;
     }
-    
+
     function closePhoneModal() {
       document.getElementById("phoneModal").style.display = "none";
       startQuestionTimer();

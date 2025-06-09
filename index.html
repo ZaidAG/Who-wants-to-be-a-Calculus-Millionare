@@ -282,6 +282,13 @@
           return 60; // fallback
       }
     }
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
     const prizeLadder = [
       10, 100, 200, 300, 500, 1000,
       2000, 4000, 8000, 16000, 32000,
@@ -555,6 +562,7 @@
 
     let currentQuestion = 0;
     let questionsInPlay = [];
+    let audienceHintGiven = false;
     let score = 0;
     let lifelinesUsed = {
       fiftyFifty: false,
@@ -656,7 +664,7 @@
 
     function selectCategory(category) {
         stopIntroMusic();
-        questionsInPlay = categorizedQuestions[category];
+        questionsInPlay = shuffleArray([...categorizedQuestions[category]]);
         currentQuestion = 0;
         document.getElementById("category-selection").style.display = "none";
         document.getElementById("lifelines").style.display = "block";
@@ -882,6 +890,7 @@
     function useAskAudience() {
       if (!lifelinesUsed.audience && currentQuestion < questionsInPlay.length) {
         lifelinesUsed.audience = true;
+        audienceHintGiven = false;
         const button = document.querySelector('#lifelines button:nth-child(2)');
         button.classList.add("used-lifeline");
         button.disabled = true;
@@ -938,7 +947,10 @@
     }
     
     function closeAudienceModal() {
+      clearInterval(audienceInterval);
       document.getElementById("audienceModal").style.display = "none";
+    
+      if (audienceHintGiven) return; // ✅ already gave the hint
     
       const q = questionsInPlay[currentQuestion];
       const correctAnswer = q.answer;
@@ -946,9 +958,10 @@
     
       const message = `The audience thinks the correct answer is ${correctOption}`;
       speakText(message);
-      startQuestionTimer();
+    
+      audienceHintGiven = true; // ✅ mark as done
     }
-
+    
     function closePhoneModal() {
       document.getElementById("phoneModal").style.display = "none";
       startQuestionTimer();

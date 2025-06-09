@@ -563,6 +563,7 @@
     let currentQuestion = 0;
     let questionsInPlay = [];
     let audienceHintGiven = false;
+    let audienceInterval = null;
     let score = 0;
     let lifelinesUsed = {
       fiftyFifty: false,
@@ -904,7 +905,7 @@
           timeLeft--;
           document.getElementById("audienceTimer").textContent = timeLeft;
           if (timeLeft <= 0) {
-            clearInterval(interval);
+            clearInterval(audienceInterval);
             closeAudienceModal();
           }
         }, 1000);
